@@ -1,0 +1,24 @@
+{
+  "name": "living-worlds-screensaver",
+  "version": "1.0.0",
+  "description": "Living Worlds screensaver in Electron",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neurotech/living-worlds-screensaver.git"
+  },
+  "author": "Tim Douglas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/neurotech/living-worlds-screensaver/issues"
+  },
+  "homepage": "https://github.com/neurotech/living-worlds-screensaver#readme",
+  "dependencies": {
+    "electron": "^6.0.1",
+    "normalize.css": "^8.0.1"
+  }
+}

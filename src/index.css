@@ -1,0 +1,34 @@
+/* html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  background-color: #000;
+  overflow: hidden;
+  cursor: none;
+} */
+
+h1 {
+  color: dimgray;
+}
+
+#scene {
+  float: left;
+	z-index: 2;
+	
+	-webkit-transform-origin: 0px 0px;
+	-moz-transform-origin: 0px 0px;
+	-o-transform-origin: 0px 0px; 
+	
+	/* -webkit-transform: translate3d(0px, 0px, 0px) scale(1);
+	-moz-transform: translate(0px 0px) scale(1);
+	-o-transform: translate(0px 0px) scale(1);
+	*/
+	
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-crisp-edges;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+}

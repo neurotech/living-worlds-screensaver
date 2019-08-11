@@ -260,6 +260,8 @@ var CanvasCycle = {
         if (this.timeOffset >= 86400) this.timeOffset = 0;
       }
 
+      optimize = false;
+
       if (this.lastBrightness != this.globalBrightness) optimize = false;
       if (this.highlightColor != this.lastHighlightColor) optimize = false;
 

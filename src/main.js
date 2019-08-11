@@ -119,9 +119,6 @@ var CanvasCycle = {
         );
         var sceneToLoad = require(scenePath);
         CanvasCycle.initScene(scenes[tween.target.newSceneIdx], sceneToLoad);
-        if (!scenes[tween.target.newSceneIdx].timeless) {
-          CanvasCycle.setTimeOfDayPalette();
-        }
       },
       category: "scenefade"
     });
@@ -260,10 +257,13 @@ var CanvasCycle = {
         if (this.timeOffset >= 86400) this.timeOffset = 0;
       }
 
-      optimize = false;
-
       if (this.lastBrightness != this.globalBrightness) optimize = false;
       if (this.highlightColor != this.lastHighlightColor) optimize = false;
+
+      if (!scenes[this.sceneIdx].timeless && this.oldTimeOffset === -1) {
+        this.setTimeOfDayPalette();
+        optimize = false;
+      }
 
       // cycle palette
       this.bmp.palette.cycle(

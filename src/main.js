@@ -119,6 +119,9 @@ var CanvasCycle = {
         );
         var sceneToLoad = require(scenePath);
         CanvasCycle.initScene(scenes[tween.target.newSceneIdx], sceneToLoad);
+        if (!scenes[tween.target.newSceneIdx].timeless) {
+          CanvasCycle.setTimeOfDayPalette();
+        }
       },
       category: "scenefade"
     });
@@ -257,13 +260,6 @@ var CanvasCycle = {
         if (this.timeOffset >= 86400) this.timeOffset = 0;
       }
 
-      if (!scenes[this.sceneIdx].timeless) {
-        if (this.timeOffset != this.oldTimeOffset) {
-          // calculate time-of-day base colors
-          this.setTimeOfDayPalette();
-          optimize = false;
-        }
-      }
       if (this.lastBrightness != this.globalBrightness) optimize = false;
       if (this.highlightColor != this.lastHighlightColor) optimize = false;
 
@@ -313,6 +309,7 @@ var CanvasCycle = {
       dist: 86400,
       offset: 0
     };
+
     for (var offset in this.timeline) {
       if (offset <= this.timeOffset && this.timeOffset - offset < before.dist) {
         before.dist = this.timeOffset - offset;
@@ -391,7 +388,7 @@ var CanvasCycle = {
   },
 
   startShuffle: function() {
-    var interval = 1000 * 30;
+    var interval = 1000 * 35;
     setInterval(function() {
       CanvasCycle.switchScene(Math.floor(Math.random() * scenes.length));
     }, interval);

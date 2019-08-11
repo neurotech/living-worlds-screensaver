@@ -4,6 +4,7 @@
   "description": "Living Worlds screensaver in Electron",
   "main": "app.js",
   "scripts": {
+    "bundle": "electron-packager ./ living-worlds-screensaver --overwrite --platform=win32 --arch=x64 --asar --out=./dist",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,7 +19,10 @@
   },
   "homepage": "https://github.com/neurotech/living-worlds-screensaver#readme",
   "dependencies": {
-    "electron": "^6.0.1",
     "normalize.css": "^8.0.1"
+  },
+  "devDependencies": {
+    "electron": "^6.0.1",
+    "electron-packager": "^14.0.4"
   }
 }

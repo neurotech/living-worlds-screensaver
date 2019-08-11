@@ -248,15 +248,6 @@ var CanvasCycle = {
     if (this.inGame) {
       var colors = this.bmp.palette.colors;
 
-      if (this.settings.showOptions) {
-        for (var idx = 0, len = colors.length; idx < len; idx++) {
-          var clr = colors[idx];
-          var div = $("pal_" + idx);
-          div.style.backgroundColor =
-            "rgb(" + clr.red + "," + clr.green + "," + clr.blue + ")";
-        }
-      }
-
       var optimize = true;
       var newSec = FrameCount.count();
 

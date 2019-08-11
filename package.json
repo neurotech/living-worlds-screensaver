@@ -4,7 +4,7 @@
   "description": "Living Worlds screensaver in Electron",
   "main": "app.js",
   "scripts": {
-    "bundle": "electron-packager ./ living-worlds-screensaver --overwrite --platform=win32 --arch=x64 --asar --out=./dist",
+    "bundle": "electron-packager ./ living-worlds-screensaver --overwrite --platform=win32 --arch=x64 --asar --out=./dist && mv ./dist/living-worlds-screensaver-win32-x64/living-worlds-screensaver.exe ./dist/living-worlds-screensaver-win32-x64/living-worlds-screensaver.scr",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -23,10 +23,6 @@ app.on("ready", () => {
     // The /S option is passed when the user chooses Configure from the .scr file context menu (although we don't see this in practice).
     // The /c:# option is passed when the user clicks Settings... in the Screen Saver Settings dialog.
     if (process.argv[1] === "/S" || process.argv[1].match(/^\/c/)) {
-      electron.dialog.showMessageBox({
-        message: "This screen saver has no options that you can set.",
-        buttons: ["OK"]
-      });
       app.quit();
       return;
     }

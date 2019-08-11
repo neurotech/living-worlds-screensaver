@@ -1,140 +1,205 @@
 var scenes = [
   {
-    month: "01January",
-    scpt: "janclrscpt",
-    name: "V26",
+    id: 0,
     title: "Winter Forest - Clear",
-    sound: "V13",
-    path: "/scenefiles/winter-forest/clear"
+    path: "/scenefiles/winter-forest/clear",
+    yOffset: "-120px"
   },
   {
-    monthIdx: 0,
-    month: "01January",
-    scpt: "jansnowscpt",
-    name: "V26SNOW",
+    id: 1,
     title: "Winter Forest - Snow",
-    sound: "V05RAIN",
     path: "/scenefiles/winter-forest/snow",
-    maxVolume: 0.25
+    yOffset: "-120px"
   },
   {
-    monthIdx: 1,
-    month: "02February",
-    scpt: "febclrscpt",
-    name: "V19",
+    id: 2,
     title: "Mountain Stream - Clear",
     path: "/scenefiles/mountain-stream/clear",
-    sound: "V19"
+    yOffset: "-30px"
   },
   {
-    monthIdx: 3,
-    month: "04April",
-    scpt: "aprclrscpt",
-    name: "V30",
+    id: 3,
+    title: "Mountain Stream - Night",
+    path: "/scenefiles/mountain-stream/night",
+    yOffset: "0px",
+    timeless: true
+  },
+  {
+    id: 4,
     title: "Deep Forest - Clear",
     path: "/scenefiles/deep-forest/clear",
-    sound: "V30",
-    maxVolume: 0.25
+    yOffset: "-100px"
   },
   {
-    month: "04April",
-    scpt: "aprrainscpt",
-    name: "V30RAIN",
+    id: 5,
     title: "Deep Forest - Rain",
     path: "/scenefiles/deep-forest/rain",
-    sound: "V30RAIN"
+    yOffset: "-100px"
   },
 
   {
-    monthIdx: 4,
-    month: "05May",
-    scpt: "MAYCLRSCPT",
-    name: "V08",
+    id: 6,
     title: "Jungle Waterfall - Clear",
     path: "/scenefiles/jungle-waterfall/clear",
-    sound: "V08",
-    maxVolume: 0.25
+    yOffset: "-20px"
   },
   {
-    month: "05May",
-    scpt: "MAYCLDYSCPT",
-    name: "V08",
+    id: 7,
     title: "Jungle Waterfall - Cloudy",
     path: "/scenefiles/jungle-waterfall/cloudy",
-    sound: "V08",
-    maxVolume: 0.25
+    yOffset: "-20px"
   },
   {
-    month: "05May",
-    scpt: "MAYRAINSCPT",
-    name: "V08RAIN",
+    id: 8,
     title: "Jungle Waterfall - Rain",
-    sound: "V08RAIN",
-    path: "/scenefiles/jungle-waterfall/rain"
+    path: "/scenefiles/jungle-waterfall/rain",
+    yOffset: "-20px"
   },
   {
-    monthIdx: 7,
-    month: "08August",
-    scpt: "augclrscpt",
-    name: "CORAL",
+    id: 9,
     title: "Aquarius - Clear",
     path: "/scenefiles/aquarius/clear",
-    sound: "CORAL",
-    maxVolume: 0.25,
+    yOffset: "-45px",
     remap: {
       0: [0, 0, 0]
     }
   },
   {
-    monthIdx: 8,
-    month: "09September",
-    scpt: "SEPTCLRCUMSCPT",
-    name: "V29",
+    id: 10,
     title: "Seascape - Clear",
     path: "/scenefiles/seascape/clear",
-    sound: "V29",
+    yOffset: "-65px",
     remap: {
       252: [11, 11, 11]
     }
   },
   {
-    month: "09September",
-    scpt: "SEPTCLDYSCPT",
-    name: "V29",
+    id: 11,
     title: "Seascape - Cloudy",
     path: "/scenefiles/seascape/cloudy",
-    sound: "V29",
+    yOffset: "-65px",
     remap: {
       252: [11, 11, 11]
     }
   },
   {
-    month: "10October",
-    scpt: "octrainscpt",
-    name: "V05RAIN",
+    id: 12,
+    title: "Seascape - Fog",
+    path: "/scenefiles/seascape/fog",
+    yOffset: "-65px",
+    timeless: true
+  },
+  {
+    id: 13,
     title: "Haunted Ruins - Rain",
     path: "/scenefiles/haunted-ruins/rain",
-    sound: "V05RAIN",
+    yOffset: "-15px",
     remap: {
       254: [0, 0, 0],
       0: [11, 11, 11]
     }
   },
   {
-    monthIdx: 10,
-    month: "11November",
-    scpt: "novclrscpt",
-    name: "V16",
-    title: "Mirror Pond - Clear",
-    path: "/scenefiles/mirror-pond/clear",
-    sound: "V16"
+    id: 14,
+    title: "Haunted Ruins - Night",
+    path: "/scenefiles/haunted-ruins/night",
+    yOffset: "-15px",
+    timeless: true
   },
   {
-    month: "11November",
-    scpt: "novrainscpt",
-    name: "V16RAIN",
+    id: 15,
+    title: "Mirror Pond - Clear",
+    path: "/scenefiles/mirror-pond/clear",
+    yOffset: "-55px"
+  },
+  {
+    id: 16,
     title: "Mirror Pond - Rain",
     path: "/scenefiles/mirror-pond/rain",
-    sound: "V16RAIN"
+    yOffset: "-55px"
+  },
+  {
+    id: 17,
+    title: "Mirror Pond - Morning",
+    path: "/scenefiles/mirror-pond/morning",
+    yOffset: "-55px",
+    timeless: true
+  },
+  {
+    id: 18,
+    title: "Mountain Storm - Day",
+    path: "/scenefiles/mountain-storm/day",
+    yOffset: "-34px",
+    timeless: true
+  },
+  {
+    id: 19,
+    title: "Highland Ruins - Rain",
+    path: "/scenefiles/highland-ruins/rain",
+    yOffset: "-60px",
+    timeless: true
+  },
+  {
+    id: 20,
+    title: "Harbor Town - Night",
+    path: "/scenefiles/harbor-town/night",
+    yOffset: "-85px",
+    timeless: true
+  },
+  {
+    id: 21,
+    title: "Mountain Fortress - Dusk",
+    path: "/scenefiles/mountain-fortress/dusk",
+    yOffset: "-70px",
+    timeless: true
+  },
+  {
+    id: 22,
+    title: "Water City Gates - Fog",
+    path: "/scenefiles/water-city-gates/fog",
+    yOffset: "-100px",
+    timeless: true
+  },
+  {
+    id: 23,
+    title: "Island Fires - Dusk",
+    path: "/scenefiles/island-fires/dusk",
+    yOffset: "-20px",
+    timeless: true
+  },
+  {
+    id: 24,
+    title: "Forest Edge - Day",
+    path: "/scenefiles/forest-edge/day",
+    yOffset: "-85px",
+    timeless: true
+  },
+  {
+    id: 25,
+    title: "Pond Ripples - Dawn",
+    path: "/scenefiles/pond-ripples/dawn",
+    yOffset: "-45px",
+    timeless: true
+  },
+  {
+    id: 26,
+    title: "Ice Wind - Day",
+    path: "/scenefiles/ice-wind/day",
+    yOffset: "-20px",
+    timeless: true
+  },
+  {
+    id: 27,
+    title: "Desert Heat Wave - Day",
+    path: "/scenefiles/desert-heat-wave/day",
+    yOffset: "-55px",
+    timeless: true
+  },
+  {
+    id: 28,
+    title: "Magic Marsh Cave - Night",
+    path: "/scenefiles/magic-marsh-cave/night",
+    yOffset: "-53px",
+    timeless: true
   }
 ];

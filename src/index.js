@@ -5,7 +5,9 @@ var sendQuit = function() {
 };
 
 window.addEventListener("load", function onLoad() {
-  CC.init();
+  setTimeout(() => {
+    CC.init();
+  }, 2250);
 });
 
 var dev = false;
@@ -27,6 +29,3 @@ if (!dev) {
     });
   }, 3000);
 }
-
-// And now the fun part – the actual thing the screensaver displays. Replace this with your own creation!
-// TODO

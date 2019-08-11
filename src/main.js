@@ -91,7 +91,7 @@ var CanvasCycle = {
       var path = require("path");
       var scenePath = path.join(__dirname + scenes[initialSceneIdx].path);
       var sceneToLoad = require(scenePath);
-      this.initScene(sceneToLoad);
+      this.initScene(scenes[initialSceneIdx], sceneToLoad);
 
       // Start 30 sec scene shuffle interval
       this.startShuffle();
@@ -118,46 +118,38 @@ var CanvasCycle = {
           __dirname + scenes[tween.target.newSceneIdx].path
         );
         var sceneToLoad = require(scenePath);
-        CanvasCycle.initScene(sceneToLoad);
+        CanvasCycle.initScene(scenes[tween.target.newSceneIdx], sceneToLoad);
       },
       category: "scenefade"
     });
   },
 
-  loadScene: function(idx) {
-    this.stop();
-    var scene = scenes[idx];
-    var url =
-      "scene.php?file=" +
-      scene.name +
-      "&month=" +
-      scene.month +
-      "&script=" +
-      scene.scpt +
-      "&callback=CanvasCycle.initScene";
-    var scr = document.createElement("SCRIPT");
-    scr.type = "text/javascript";
-    scr.src = url;
-    document.getElementsByTagName("HEAD")[0].appendChild(scr);
-  },
-
-  initScene: function(scene) {
+  initScene: function(scene, sceneData) {
     // initialize, receive image data from server
-    this.initPalettes(scene.palettes);
-    this.initTimeline(scene.timeline);
+    this.initPalettes(sceneData.palettes);
+    this.initTimeline(sceneData.timeline);
 
     // force a full palette and pixel refresh for first frame
     this.oldTimeOffset = -1;
 
     // create an intermediate palette that will hold the time-of-day colors
-    this.todPalette = new Palette(scene.base.colors, scene.base.cycles);
+    this.todPalette = new Palette(sceneData.base.colors, sceneData.base.cycles);
 
-    // process base scene image
-    this.bmp = new Bitmap(scene.base);
+    // process base sceneData image
+    this.bmp = new Bitmap(sceneData.base);
     this.bmp.optimize();
 
     var canvas = document.getElementById("mycanvas");
     if (!canvas.getContext) return; // no canvas support
+
+    if (scene.yOffset) {
+      canvas.setAttribute(
+        "style",
+        `transform: scale(3) translateY(${scene.yOffset});`
+      );
+    } else {
+      canvas.setAttribute("style", `transform: scale(3);`);
+    }
 
     if (!this.ctx) this.ctx = canvas.getContext("2d");
     this.ctx.clearRect(0, 0, this.bmp.width, this.bmp.height);
@@ -263,12 +255,6 @@ var CanvasCycle = {
           div.style.backgroundColor =
             "rgb(" + clr.red + "," + clr.green + "," + clr.blue + ")";
         }
-
-        // if (this.clock % this.settings.targetFPS == 0) $('d_debug').innerHTML = 'FPS: ' + FrameCount.current;
-        $("d_debug").innerHTML =
-          "FPS: " +
-          FrameCount.current +
-          (this.highlightColor != -1 ? " - Color #" + this.highlightColor : "");
       }
 
       var optimize = true;
@@ -280,10 +266,12 @@ var CanvasCycle = {
         if (this.timeOffset >= 86400) this.timeOffset = 0;
       }
 
-      if (this.timeOffset != this.oldTimeOffset) {
-        // calculate time-of-day base colors
-        this.setTimeOfDayPalette();
-        optimize = false;
+      if (!scenes[this.sceneIdx].timeless) {
+        if (this.timeOffset != this.oldTimeOffset) {
+          // calculate time-of-day base colors
+          this.setTimeOfDayPalette();
+          optimize = false;
+        }
       }
       if (this.lastBrightness != this.globalBrightness) optimize = false;
       if (this.highlightColor != this.lastHighlightColor) optimize = false;

@@ -4,7 +4,11 @@ var sendQuit = function() {
   ipc.send("sendQuit");
 };
 
-var dev = true;
+window.addEventListener("load", function onLoad() {
+  CC.init();
+});
+
+var dev = false;
 
 if (!dev) {
   document.addEventListener("keydown", sendQuit);

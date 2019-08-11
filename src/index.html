@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="Content-Security-Policy" />
-    <title>Living Worlds Screensaver</title>
-    <!-- <link rel="stylesheet" type="text/css" media="screen" href="../node_modules/normalize.css/normalize.css" /> -->
-    <link rel="stylesheet" href="index.css" />
-    <script type="text/javascript" src="index.js"></script>
-    <script type="text/javascript" src="canvascycle/oop.js"></script>
-    <script type="text/javascript" src="canvascycle/tools.js"></script>
-    <script type="text/javascript" src="canvascycle/cookie.js"></script>
-    <script type="text/javascript" src="canvascycle/palette.js"></script>
-    <script type="text/javascript" src="canvascycle/bitmap.js"></script>
-    <script type="text/javascript" src="canvascycle/tween.js"></script>
-    <script type="text/javascript" src="canvascycle/framecount.js"></script>
-    <script type="text/javascript" src="canvascycle/main.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Living Worlds</title>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+
+    <script type="text/javascript" src="oop.js"></script>
+    <script type="text/javascript" src="tools.js"></script>
+    <script type="text/javascript" src="cookie.js"></script>
+    <script type="text/javascript" src="palette.js"></script>
+    <script type="text/javascript" src="bitmap.js"></script>
+    <script type="text/javascript" src="scenes.js"></script>
+    <script type="text/javascript" src="tween.js"></script>
+    <script type="text/javascript" src="framecount.js"></script>
+		<script type="text/javascript" src="main.js"></script>
   </head>
   <body>
-    <h1>Header</h1>
-    <canvas id="scene" width="640" height="480" style=""></canvas>
-    <script type="text/javascript">CC.init();</script>
+		<div id="container">
+			<canvas id="mycanvas" width="640" height="480"></canvas>
+    </div>
+    <script type="text/javascript" src="index.js"></script>
   </body>
 </html>

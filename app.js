@@ -1,28 +1,24 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 
 var mainWindow = null;
 
-// Quit when all windows are closed.
 app.on("window-all-closed", function() {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform != "darwin") {
     app.quit();
   }
 });
 
 app.on("ready", () => {
-  if (process.argv.length > 1) {
-    // The /p option tells us to display the screen saver in the tiny preview window in the Screen Saver Settings dialog.
-    if (process.argv[1] === "/p") {
-      app.quit();
-      return;
-    }
+  var screen = require("electron").screen;
+  var primaryDisplay = screen.getPrimaryDisplay();
+  var displays = screen.getAllDisplays();
+  console.log(displays);
 
-    // The /S option is passed when the user chooses Configure from the .scr file context menu (although we don't see this in practice).
-    // The /c:# option is passed when the user clicks Settings... in the Screen Saver Settings dialog.
-    if (process.argv[1] === "/S" || process.argv[1].match(/^\/c/)) {
+  if (process.argv.length > 1) {
+    // Handle Windows screen saver flags
+    var params = process.argv[1];
+    if (params === "/p" || params === "/S" || params.match(/^\/c/)) {
       app.quit();
       return;
     }
@@ -38,10 +34,6 @@ app.on("ready", () => {
     mainWindow = null;
   });
 
-  // Normally we could set show, kiosk, and alwaysOnTop to true in the BrowserWindow options.
-  // We have to do this after a brief delay so that the CSS cursor:none will take effect
-  // without the user having to move the mouse, and to avoid a flash of white screen while
-  // the page initially paints.
   setTimeout(() => {
     mainWindow.setKiosk(true);
     mainWindow.setAlwaysOnTop(true);
@@ -49,8 +41,6 @@ app.on("ready", () => {
   }, 2000);
 });
 
-// Quit the screensaver when the renderer process says so
-var ipc = require("electron").ipcMain;
-ipc.on("sendQuit", function() {
+ipcMain.on("sendQuit", function() {
   app.quit();
 });

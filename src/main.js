@@ -18,7 +18,7 @@ var CanvasCycle = {
   optTween: null,
   winSize: null,
   globalBrightness: 1.0,
-  transitionDuration: 200,
+  transitionDuration: 100,
   lastBrightness: 0,
   sceneIdx: 7,
   highlightColor: -1,

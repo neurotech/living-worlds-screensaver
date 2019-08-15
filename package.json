@@ -4,9 +4,18 @@
   "description": "Living Worlds screensaver in Electron",
   "main": "app.js",
   "scripts": {
-    "bundle": "electron-packager ./ living-worlds-screensaver --overwrite --platform=win32 --arch=x64 --asar --out=./dist && mv ./dist/living-worlds-screensaver-win32-x64/living-worlds-screensaver.exe ./dist/living-worlds-screensaver-win32-x64/living-worlds-screensaver.scr",
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "bundle": "electron-builder",
+    "postbundle": "rm -rf ./dist/win-unpacked",
+    "start": "electron ."
+  },
+  "build": {
+    "directories": {
+      "output": "./dist"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "artifactName" : "${productName}.scr"
   },
   "repository": {
     "type": "git",
@@ -14,15 +23,11 @@
   },
   "author": "Tim Douglas",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/neurotech/living-worlds-screensaver/issues"
-  },
-  "homepage": "https://github.com/neurotech/living-worlds-screensaver#readme",
   "dependencies": {
     "normalize.css": "^8.0.1"
   },
   "devDependencies": {
     "electron": "^6.0.1",
-    "electron-packager": "^14.0.4"
+    "electron-builder": "^21.2.0"
   }
 }

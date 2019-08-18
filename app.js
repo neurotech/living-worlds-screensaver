@@ -59,8 +59,7 @@ app.on("ready", () => {
 
     // Load blank page for non-primary displays
     additionalWindows.forEach(win => {
-      // win.loadURL(path.join(__dirname, "src/blank.html"));
-      win.loadURL(path.join(__dirname, "src/index.html"));
+      win.loadURL(path.join(__dirname, "src/blank.html"));
     });
   }
 

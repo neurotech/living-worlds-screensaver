@@ -15,7 +15,7 @@
     "win": {
       "target": "portable"
     },
-    "artifactName" : "${productName}.scr"
+    "artifactName": "${productName}.scr"
   },
   "repository": {
     "type": "git",

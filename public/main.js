@@ -138,7 +138,7 @@ const CanvasCycle = {
 
   loadImage: async function (name, title, offsetX, offsetY) {
     this.stop();
-    const sceneToLoad = require(`./src/scenefiles/${name}.json`);
+    const sceneToLoad = require(`./scenefiles/${name}.json`);
 
     console.table({
       name,

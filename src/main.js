@@ -59,8 +59,6 @@ const CanvasCycle = {
       this.timeOffset =
         (now.getHours() + 1) * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-      CC.timeOffset = 50000;
-
       this.sceneIdx = initialSceneIdx;
       const scene = scenes[initialSceneIdx];
       this.loadImage(scene.name, scene.title, scene.offsetX, scene.offsetY);

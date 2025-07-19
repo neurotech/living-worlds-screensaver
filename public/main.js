@@ -30,7 +30,7 @@ const CanvasCycle = {
   sceneIdx: -1,
   highlightColor: -1,
   defaultMaxVolume: 0.5,
-  transitionDuration: 725,
+  transitionDuration: 480,
 
   settings: {
     targetFPS: 240,
@@ -65,7 +65,7 @@ const CanvasCycle = {
 
       setInterval(() => {
         this.randomScene();
-      }, 1000 * 20);
+      }, 1000 * 30);
     }
   },
 

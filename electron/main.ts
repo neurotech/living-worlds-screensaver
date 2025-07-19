@@ -34,6 +34,7 @@ const createWindow = () => {
     height: 840,
     autoHideMenuBar: true,
     darkTheme: true,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       sandbox: false,
@@ -52,7 +53,6 @@ const createWindow = () => {
           ...browserWindowOptions,
           x: display.bounds.x,
           y: display.bounds.y,
-          show: false,
         }),
       );
     });

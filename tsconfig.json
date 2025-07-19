@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "jsxImportSource": "@emotion/react",
@@ -19,8 +23,13 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "electron"],
-  "exclude": ["src/living-worlds"],
+  "include": [
+    "src",
+    "electron"
+  ],
+  "exclude": [
+    "public"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

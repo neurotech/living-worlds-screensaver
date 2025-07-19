@@ -2,22 +2,13 @@
 
 Living Worlds screensaver in Electron
 
-## Scenes
+## Installation
 
- - Winter Forest - Clear
- - Winter Forest - Snow
- - Mountain Stream - Clear
- - Deep Forest - Clear
- - Deep Forest - Rain
- - Jungle Waterfall - Clear
- - Jungle Waterfall - Cloudy
- - Jungle Waterfall - Rain
- - Aquarius - Clear
- - Seascape - Clear
- - Seascape - Cloudy
- - Haunted Ruins - Rain
- - Mirror Pond - Clear
- - Mirror Pond - Rain
+1. `pnpm run build`
+2. Copy `living-worlds-screensaver.scr` from `./release/1.0.0/` to `C:\Windows\SysWOW64`
+3. Open the Start menu
+4. Search for `Change screen saver`
+5. In the dialog that appears, select `living-worlds-screensaver` in the dropdown
 
 ## Credits
 

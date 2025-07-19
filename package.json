@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "build": {
+    "asar": true,
+    "files": [
+      "dist-electron",
+      "dist"
+    ],
     "directories": {
-      "output": "./dist"
+      "output": "release/${version}"
     },
     "win": {
       "target": "portable"
@@ -27,7 +32,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
     "electron": "^25.2.0",
-    "electron-builder": "^24.4.0",
+    "electron-builder": "^26.0.12",
     "typescript": "^5.1.6",
     "vite": "^4.3.9",
     "vite-plugin-electron": "^0.12.0",

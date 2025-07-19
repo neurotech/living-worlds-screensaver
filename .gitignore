@@ -26,4 +26,4 @@ release
 *.sw?
 
 # Scene Files
-src/scenefiles/*.json
+public/scenefiles/*.json

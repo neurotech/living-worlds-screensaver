@@ -65,7 +65,7 @@ const CanvasCycle = {
 
       setInterval(() => {
         this.randomScene();
-      }, 1000 * 30);
+      }, 1000 * 20);
     }
   },
 

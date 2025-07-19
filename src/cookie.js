@@ -33,10 +33,10 @@ function CookieTree(args) {
 CookieTree.prototype.domain = location.hostname;
 CookieTree.prototype.path = location.pathname;
 
-CookieTree.prototype.parse = function() {
+CookieTree.prototype.parse = function () {
   // parse document.cookie into hash tree
   this.tree = {};
-  var cookies = document.cookie.split(/\;\s*/);
+  var cookies = document.cookie.split(/;\s*/);
   for (var idx = 0, len = cookies.length; idx < len; idx++) {
     var cookie_raw = cookies[idx];
     if (cookie_raw.match(/^CookieTree=(.+)$/)) {
@@ -56,22 +56,22 @@ CookieTree.prototype.parse = function() {
   }
 };
 
-CookieTree.prototype.get = function(key) {
+CookieTree.prototype.get = function (key) {
   // get tree branch given value (top level)
   return this.tree[key];
 };
 
-CookieTree.prototype.set = function(key, value) {
+CookieTree.prototype.set = function (key, value) {
   // set tree branch to given value (top level)
   this.tree[key] = value;
 };
 
-CookieTree.prototype.save = function() {
+CookieTree.prototype.save = function () {
   // serialize tree and save back into document.cookie
   var cookie_raw = "CookieTree=" + escape(serialize(this.tree));
 
   if (!this.path.match(/\/$/)) {
-    this.path = this.path.replace(/\/[^\/]+$/, "") + "/";
+    this.path = this.path.replace(/\/[^/]+$/, "") + "/";
   }
 
   cookie_raw += "; expires=" + this.expires;
@@ -83,12 +83,12 @@ CookieTree.prototype.save = function() {
   document.cookie = cookie_raw;
 };
 
-CookieTree.prototype.remove = function() {
+CookieTree.prototype.remove = function () {
   // remove cookie from document
   var cookie_raw = "CookieTree={}";
 
   if (!this.path.match(/\/$/)) {
-    this.path = this.path.replace(/\/[^\/]+$/, "") + "/";
+    this.path = this.path.replace(/\/[^/]+$/, "") + "/";
   }
 
   var now = new Date();

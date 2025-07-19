@@ -3,7 +3,7 @@
 import type { api } from "./preload";
 
 declare global {
-	interface Window {
-		Main: typeof api;
-	}
+  interface Window {
+    Main: typeof api;
+  }
 }

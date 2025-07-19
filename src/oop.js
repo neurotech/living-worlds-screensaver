@@ -17,7 +17,7 @@ function _var_exists(name) {
 
 var Namespace = {
   // simple namespace support for classes
-  create: function(path) {
+  create: (path) => {
     // create namespace for class
     var container = null;
     while (path.match(/^(\w+)\.?/)) {
@@ -33,7 +33,7 @@ var Namespace = {
       }
     }
   },
-  prep: function(name) {
+  prep: (name) => {
     // prep namespace for new class
     if (name.match(/^(.+)\.(\w+)$/)) {
       var path = RegExp.$1;
@@ -41,17 +41,17 @@ var Namespace = {
       Namespace.create(path);
     }
     return { name: name };
-  }
+  },
 };
 
 var Class = {
   // simple class factory
-  create: function(name, members) {
+  create: (name, members) => {
     // generate new class with optional namespace
 
     // support Prototype-style calling convention
     if (!name && !members) {
-      return function() {
+      return function () {
         if (this.initialize) this.initialize.apply(this, arguments);
         else if (this.__construct) this.__construct.apply(this, arguments);
       };
@@ -68,7 +68,7 @@ var Class = {
 
     members.__name = name;
 
-    if (!members.__construct) members.__construct = function() {};
+    if (!members.__construct) members.__construct = () => {};
 
     // container[name] = members.__construct;
     var obj = null;
@@ -82,14 +82,14 @@ var Class = {
     }
 
     obj.prototype = members;
-    obj.extend = obj.subclass = function(name, members) {
+    obj.extend = obj.subclass = function (name, members) {
       Class.subclass(this, name, members);
     };
-    obj.set = obj.add = function(members) {
+    obj.set = obj.add = function (members) {
       Class.add(this, members);
     };
   },
-  subclass: function(parent, name, members) {
+  subclass: (parent, name, members) => {
     // subclass an existing class
     assert(parent, "Must pass parent class to Class.subclass");
     assert(name, "Must pass name to Class.subclass");
@@ -113,7 +113,7 @@ var Class = {
       var args = code.substring(code.indexOf("(") + 1, code.indexOf(")"));
       var inner_code = code.substring(
         code.indexOf("{") + 1,
-        code.lastIndexOf("}")
+        code.lastIndexOf("}"),
       );
       eval(
         "members.__construct = " +
@@ -122,7 +122,7 @@ var Class = {
           args +
           ") {" +
           inner_code +
-          "};"
+          "};",
       );
     }
 
@@ -144,30 +144,30 @@ var Class = {
     // for (var key in parent.prototype) container[subname].prototype[key] = parent.prototype[key];
     for (var key in members) obj.prototype[key] = members[key];
 
-    obj.extend = obj.subclass = function(name, members) {
+    obj.extend = obj.subclass = function (name, members) {
       Class.subclass(this, name, members);
     };
-    obj.set = obj.add = function(members) {
+    obj.set = obj.add = function (members) {
       Class.add(this, members);
     };
   },
-  add: function(obj, members) {
+  add: (obj, members) => {
     // add members to an existing class
     for (var key in members) obj.prototype[key] = members[key];
   },
-  require: function() {
+  require: () => {
     // make sure classes are loaded
     for (var idx = 0, len = arguments.length; idx < len; idx++) {
       assert(!!eval("window." + arguments[idx]));
     }
     return true;
-  }
+  },
 };
 Class.extend = Class.subclass;
 Class.set = Class.add;
 
 if (!window.assert)
-  window.assert = function(fact, msg) {
+  window.assert = (fact, msg) => {
     // very simple assert
     if (!fact) return alert("ASSERT FAILED!  " + msg);
     return fact;

@@ -1,42 +1,42 @@
 {
-	"name": "living-worlds-screensaver",
-	"version": "1.0.0",
-	"description": "Living Worlds screensaver in Electron",
-	"main": "dist-electron/main.js",
-	"scripts": {
-		"dev": "vite",
-		"build": "tsc && vite build && electron-builder",
-		"check": "biome check",
-		"preview": "vite preview"
-	},
-	"build": {
-		"directories": {
-			"output": "./dist"
-		},
-		"win": {
-			"target": "portable"
-		},
-		"artifactName": "${productName}.scr"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/neurotech/living-worlds-screensaver.git"
-	},
-	"author": "Tim Douglas",
-	"license": "MIT",
-	"devDependencies": {
-		"@biomejs/biome": "2.1.2",
-		"electron": "^25.2.0",
-		"electron-builder": "^24.4.0",
-		"typescript": "^5.1.6",
-		"vite": "^4.3.9",
-		"vite-plugin-electron": "^0.12.0",
-		"vite-plugin-electron-renderer": "^0.14.5"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"electron",
-			"esbuild"
-		]
-	}
+  "name": "living-worlds-screensaver",
+  "version": "1.0.0",
+  "description": "Living Worlds screensaver in Electron",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder",
+    "check": "biome check",
+    "preview": "vite preview"
+  },
+  "build": {
+    "directories": {
+      "output": "./dist"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "artifactName": "${productName}.scr"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neurotech/living-worlds-screensaver.git"
+  },
+  "author": "Tim Douglas",
+  "license": "MIT",
+  "devDependencies": {
+    "@biomejs/biome": "2.1.2",
+    "electron": "^25.2.0",
+    "electron-builder": "^24.4.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.3.9",
+    "vite-plugin-electron": "^0.12.0",
+    "vite-plugin-electron-renderer": "^0.14.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
+  }
 }

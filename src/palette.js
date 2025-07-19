@@ -10,15 +10,15 @@ Class.create("Color", {
   green: 0,
   blue: 0,
 
-  __construct: function(r, g, b) {
+  __construct: function (r, g, b) {
     this.set(r, g, b);
   },
 
-  set: function(r, g, b) {
+  set: function (r, g, b) {
     this.red = r;
     this.green = g;
     this.blue = b;
-  }
+  },
 });
 
 Class.create("Cycle", {
@@ -28,12 +28,12 @@ Class.create("Cycle", {
   low: 0,
   high: 0,
 
-  __construct: function(r, rev, l, h) {
+  __construct: function (r, rev, l, h) {
     this.rate = r;
     this.reverse = rev;
     this.low = l;
     this.high = h;
-  }
+  },
 });
 
 Class.create("Palette", {
@@ -54,16 +54,12 @@ Class.create("Palette", {
     ENABLE_CYCLING: 1,
 
     // this utility function allows for variable precision floating point modulus
-    DFLOAT_MOD: function(a, b) {
-      return (
-        (Math.floor(a * Palette.PRECISION) %
-          Math.floor(b * Palette.PRECISION)) /
-        Palette.PRECISION
-      );
-    }
+    DFLOAT_MOD: (a, b) =>
+      (Math.floor(a * Palette.PRECISION) % Math.floor(b * Palette.PRECISION)) /
+      Palette.PRECISION,
   },
 
-  __construct: function(clrs, cycls) {
+  __construct: function (clrs, cycls) {
     // class constructor
     this.colors = [];
     this.baseColors = [];
@@ -82,7 +78,7 @@ Class.create("Palette", {
     this.numCycles = this.cycles.length;
   },
 
-  importColors: function(source) {
+  importColors: function (source) {
     // import colors into our base color list
     var dest = this.baseColors;
     for (var idx = 0, len = source.length; idx < len; idx++) {
@@ -93,7 +89,7 @@ Class.create("Palette", {
     }
   },
 
-  copyColors: function(source, dest) {
+  copyColors: (source, dest) => {
     // copy one array of colors to another
     for (var idx = 0, len = source.length; idx < len; idx++) {
       if (!dest[idx]) dest[idx] = new Color();
@@ -103,7 +99,7 @@ Class.create("Palette", {
     }
   },
 
-  swapColors: function(a, b) {
+  swapColors: (a, b) => {
     // swap the color values of a with b
     var temp;
     temp = a.red;
@@ -117,7 +113,7 @@ Class.create("Palette", {
     b.blue = temp;
   },
 
-  reverseColors: function(colors, range) {
+  reverseColors: function (colors, range) {
     // reverse order of colors
     var i;
     var cycleSize = range.high - range.low + 1;
@@ -126,7 +122,7 @@ Class.create("Palette", {
       this.swapColors(colors[range.low + i], colors[range.high - i]);
   },
 
-  fadeColor: function(sourceColor, destColor, frame, max) {
+  fadeColor: (sourceColor, destColor, frame, max) => {
     // fade one color into another by a partial amount, return new color in between
     var tempColor = new Color();
 
@@ -135,19 +131,19 @@ Class.create("Palette", {
     if (frame > max) frame = max;
 
     tempColor.red = Math.floor(
-      sourceColor.red + ((destColor.red - sourceColor.red) * frame) / max
+      sourceColor.red + ((destColor.red - sourceColor.red) * frame) / max,
     );
     tempColor.green = Math.floor(
-      sourceColor.green + ((destColor.green - sourceColor.green) * frame) / max
+      sourceColor.green + ((destColor.green - sourceColor.green) * frame) / max,
     );
     tempColor.blue = Math.floor(
-      sourceColor.blue + ((destColor.blue - sourceColor.blue) * frame) / max
+      sourceColor.blue + ((destColor.blue - sourceColor.blue) * frame) / max,
     );
 
     return tempColor;
   },
 
-  shiftColors: function(colors, range, amount) {
+  shiftColors: (colors, range, amount) => {
     // shift (hard cycle) colors by amount
     var i, j, temp;
     amount = Math.floor(amount);
@@ -159,7 +155,7 @@ Class.create("Palette", {
     } // i loop
   },
 
-  blendShiftColors: function(colors, range, amount) {
+  blendShiftColors: function (colors, range, amount) {
     // shift colors using BlendShift (fade colors creating a smooth transition)
     // BlendShift Technology conceived, designed and coded by Joseph Huckaby
     var j, temp;
@@ -174,17 +170,17 @@ Class.create("Palette", {
         colors[j + 1],
         colors[j],
         frame,
-        Palette.PRECISION
+        Palette.PRECISION,
       );
     colors[range.low] = this.fadeColor(
       colors[range.low],
       temp,
       frame,
-      Palette.PRECISION
+      Palette.PRECISION,
     );
   },
 
-  cycle: function(sourceColors, timeNow, speedAdjust, blendShift) {
+  cycle: function (sourceColors, timeNow, speedAdjust, blendShift) {
     // cycle all animated color ranges in palette based on timestamp
     var i;
     var cycleSize, cycleRate;
@@ -204,13 +200,13 @@ Class.create("Palette", {
             // standard cycle
             cycleAmount = Palette.DFLOAT_MOD(
               timeNow / (1000 / cycleRate),
-              cycleSize
+              cycleSize,
             );
           } else if (cycle.reverse == 3) {
             // ping-pong
             cycleAmount = Palette.DFLOAT_MOD(
               timeNow / (1000 / cycleRate),
-              cycleSize * 2
+              cycleSize * 2,
             );
             if (cycleAmount >= cycleSize)
               cycleAmount = cycleSize * 2 - cycleAmount;
@@ -237,7 +233,7 @@ Class.create("Palette", {
     }
   },
 
-  fade: function(destPalette, frame, max) {
+  fade: function (destPalette, frame, max) {
     // fade entire palette to another, by adjustable amount
     var idx;
 
@@ -246,11 +242,11 @@ Class.create("Palette", {
         this.colors[idx],
         destPalette.colors[idx],
         frame,
-        max
+        max,
       );
   },
 
-  fadeToColor: function(color, frame, max) {
+  fadeToColor: function (color, frame, max) {
     // fade entire palette to a single color, by adjustable amount
     var idx;
 
@@ -258,7 +254,7 @@ Class.create("Palette", {
       this.colors[idx] = this.fadeColor(this.colors[idx], color, frame, max);
   },
 
-  burnOut: function(frame, max) {
+  burnOut: function (frame, max) {
     // burn colors towards black
     var idx,
       color,
@@ -275,7 +271,7 @@ Class.create("Palette", {
     }
   },
 
-  getRawTransformedColors: function() {
+  getRawTransformedColors: function () {
     // return transformed colors as array of 32-bit ints
     var clrs = [];
     for (var idx = 0, len = this.colors.length; idx < len; idx++) {
@@ -284,5 +280,5 @@ Class.create("Palette", {
       // clrs[idx] = (color.blue) + (color.green << 8) + (color.red << 16);
     }
     return clrs;
-  }
+  },
 });

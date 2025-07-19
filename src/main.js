@@ -1,400 +1,369 @@
 // Color Cycling in HTML5 Canvas
 // BlendShift Technology conceived, designed and coded by Joseph Huckaby
-// Copyright (c) 2001-2002, 2010 Joseph Huckaby.
-// Released under the LGPL v3.0: http://www.opensource.org/licenses/lgpl-3.0.html
+// Copyright (c) 2010 - 2024 Joseph Huckaby and PixlCore.
+// MIT Licensed: https://github.com/jhuckaby/canvascycle/blob/main/LICENSE.md
 
 FrameCount.visible = false;
 
-var CanvasCycle = {
-  cookie: new CookieTree(),
-  query: parseQueryString(location.href),
-  ctx: null,
-  imageData: null,
-  clock: 0,
-  inGame: false,
-  bmp: null,
-  globalTimeStart: new Date().getTime(),
-  inited: false,
-  optTween: null,
-  winSize: null,
-  globalBrightness: 1.0,
-  transitionDuration: 100,
-  lastBrightness: 0,
-  sceneIdx: 7,
-  highlightColor: -1,
-  defaultMaxVolume: 0.5,
+function getRandomSceneIndex(currentSceneIndex, totalScenes) {
+	let randomSceneIndex = Math.floor(Math.random() * totalScenes);
 
-  TL_WIDTH: 80,
-  TL_MARGIN: 15,
-  OPT_WIDTH: 150,
-  OPT_MARGIN: 15,
+	while (randomSceneIndex === currentSceneIndex) {
+		randomSceneIndex = Math.floor(Math.random() * totalScenes);
+	}
 
-  settings: {
-    showOptions: false,
-    targetFPS: 60,
-    zoomFull: false,
-    blendShiftEnabled: true,
-    speedAdjust: 1.0,
-    sound: false
-  },
+	return randomSceneIndex;
+}
 
-  contentSize: {
-    width: 640,
-    optionsWidth: 0,
-    height: 480 + 40,
-    scale: 1.0
-  },
+const CanvasCycle = {
+	ctx: null,
+	imageData: null,
+	clock: 0,
+	inGame: false,
+	bmp: null,
+	globalTimeStart: Date.now(),
+	inited: false,
+	optTween: null,
+	winSize: null,
+	globalBrightness: 1.0,
+	lastBrightness: 0,
+	sceneIdx: -1,
+	highlightColor: -1,
+	defaultMaxVolume: 0.5,
+	transitionDuration: 725,
 
-  init: function() {
-    // called when DOM is ready
-    if (!this.inited) {
-      this.inited = true;
+	settings: {
+		targetFPS: 240,
+		blendShiftEnabled: true,
+		speedAdjust: 1.0,
+	},
 
-      FrameCount.init();
+	contentSize: {
+		width: 640,
+		optionsWidth: 0,
+		height: 480 + 40,
+		scale: 3,
+	},
 
-      // pick starting scene
-      var initialSceneIdx = Math.floor(Math.random() * scenes.length);
-      if (!scenes[initialSceneIdx].path) {
-        initialSceneIdx = 0;
-      }
+	init: function () {
+		// called when DOM is ready
+		if (!this.inited) {
+			this.inited = true;
 
-      // read prefs from cookie
-      var prefs = this.cookie.get("settings");
-      if (!prefs)
-        prefs = {
-          showOptions: false,
-          targetFPS: 60,
-          zoomFull: false,
-          blendShiftEnabled: true,
-          speedAdjust: 1.0,
-          sound: false
-        };
+			FrameCount.init();
 
-      // allow query to override prefs
-      for (var key in this.query) {
-        prefs[key] = this.query[key];
-      }
+			const initialSceneIdx = getRandomSceneIndex(-1, scenes.length);
 
-      if (prefs) {
-        this.setRate(prefs.targetFPS);
-        this.setSpeed(prefs.speedAdjust);
-        this.setBlendShift(prefs.blendShiftEnabled);
-      }
+			// start synced to local time
+			const now = new Date();
+			this.timeOffset =
+				(now.getHours() + 1) * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-      // start synced to local time
-      var now = new Date();
-      this.timeOffset =
-        now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+			CC.timeOffset = 50000;
 
-      // load initial scene
-      this.sceneIdx = initialSceneIdx;
-      var path = require("path");
-      var scenePath = path.join(__dirname + scenes[initialSceneIdx].path);
-      var sceneToLoad = require(scenePath);
-      this.initScene(scenes[initialSceneIdx], sceneToLoad);
+			this.sceneIdx = initialSceneIdx;
+			const scene = scenes[initialSceneIdx];
+			this.loadImage(scene.name, scene.title, scene.offsetX, scene.offsetY);
 
-      // Start 30 sec scene shuffle interval
-      this.startShuffle();
-    }
-  },
+			setInterval(() => {
+				this.randomScene();
+			}, 1000 * 30);
+		}
+	},
 
-  switchScene: function(sceneIndex) {
-    // Switch to new scene
-    this.sceneIdx = sceneIndex;
+	initPalettes: function (pals) {
+		// create palette objects for each raw time-based palette
+		const scene = scenes[this.sceneIdx];
 
-    TweenManager.removeAll({ category: "scenefade" });
-    TweenManager.tween({
-      target: { value: this.globalBrightness, newSceneIdx: this.sceneIdx },
-      duration: this.transitionDuration,
-      mode: "EaseInOut",
-      algo: "Quadratic",
-      props: { value: 0.0 },
-      onTweenUpdate: function(tween) {
-        CanvasCycle.globalBrightness = tween.target.value;
-      },
-      onTweenComplete: function(tween) {
-        var path = require("path");
-        var scenePath = path.join(
-          __dirname + scenes[tween.target.newSceneIdx].path
-        );
-        var sceneToLoad = require(scenePath);
-        CanvasCycle.initScene(scenes[tween.target.newSceneIdx], sceneToLoad);
-      },
-      category: "scenefade"
-    });
-  },
+		this.palettes = {};
+		for (const key in pals) {
+			const pal = pals[key];
 
-  initScene: function(scene, sceneData) {
-    // initialize, receive image data from server
-    this.initPalettes(sceneData.palettes);
-    this.initTimeline(sceneData.timeline);
+			if (scene.remap) {
+				for (const idx in scene.remap) {
+					pal.colors[idx][0] = scene.remap[idx][0];
+					pal.colors[idx][1] = scene.remap[idx][1];
+					pal.colors[idx][2] = scene.remap[idx][2];
+				}
+			}
 
-    // force a full palette and pixel refresh for first frame
-    this.oldTimeOffset = -1;
+			const palette = (this.palettes[key] = new Palette(
+				pal.colors,
+				pal.cycles,
+			));
+			palette.copyColors(palette.baseColors, palette.colors);
+		}
+	},
 
-    // create an intermediate palette that will hold the time-of-day colors
-    this.todPalette = new Palette(sceneData.base.colors, sceneData.base.cycles);
+	initTimeline: function (entries) {
+		// create timeline with pointers to each palette
+		this.timeline = {};
+		for (const offset in entries) {
+			const palette = this.palettes[entries[offset]];
+			if (!palette)
+				return console.error(
+					`ERROR: Could not locate palette for timeline entry: ${entries[offset]}`,
+				);
+			this.timeline[offset] = palette;
+		}
+	},
 
-    // process base sceneData image
-    this.bmp = new Bitmap(sceneData.base);
-    this.bmp.optimize();
+	switchScene: function (sceneIdx) {
+		const scene = scenes[sceneIdx];
+		TweenManager.removeAll({ category: "scenefade" });
+		TweenManager.tween({
+			target: {
+				value: this.globalBrightness,
+				newSceneName: scene.name,
+				newSceneTitle: scene.title,
+				newSceneOffsetX: scene.offsetX,
+				newSceneOffsetY: scene.offsetY,
+			},
+			duration: this.transitionDuration,
+			mode: "EaseInOut",
+			algo: "Quadratic",
+			props: { value: 0.0 },
+			onTweenUpdate: (tween) => {
+				CanvasCycle.globalBrightness = tween.target.value;
+			},
+			onTweenComplete: (tween) => {
+				CanvasCycle.loadImage(
+					tween.target.newSceneName,
+					tween.target.newSceneTitle,
+					tween.target.newSceneOffsetX,
+					tween.target.newSceneOffsetY,
+				);
+			},
+			category: "scenefade",
+		});
+	},
 
-    var canvas = document.getElementById("mycanvas");
-    if (!canvas.getContext) return; // no canvas support
+	loadImage: async function (name, title, offsetX, offsetY) {
+		this.stop();
+		const sceneToLoad = require(`./src/scenefiles/${name}.json`);
 
-    if (scene.yOffset) {
-      canvas.setAttribute(
-        "style",
-        `transform: scale(3) translateY(${scene.yOffset});`
-      );
-    } else {
-      canvas.setAttribute("style", `transform: scale(3);`);
-    }
+		console.table({
+			name,
+			offsetX,
+			offsetY,
+		});
 
-    if (!this.ctx) this.ctx = canvas.getContext("2d");
-    this.ctx.clearRect(0, 0, this.bmp.width, this.bmp.height);
-    this.ctx.fillStyle = "rgb(0,0,0)";
-    this.ctx.fillRect(0, 0, this.bmp.width, this.bmp.height);
+		const canvas = document.getElementById("mycanvas");
+		if (canvas) {
+			canvas.style = `transform: scale(${CC.contentSize.scale}) translateX(${offsetX}px) translateY(${offsetY}px);`;
+		}
 
-    if (!this.imageData) {
-      if (this.ctx.createImageData) {
-        this.imageData = this.ctx.createImageData(
-          this.bmp.width,
-          this.bmp.height
-        );
-      } else if (this.ctx.getImageData) {
-        this.imageData = this.ctx.getImageData(
-          0,
-          0,
-          this.bmp.width,
-          this.bmp.height
-        );
-      } else return; // no canvas data support
-    }
-    this.bmp.clear(this.imageData);
+		CanvasCycle.processImage(sceneToLoad);
+	},
 
-    if (ua.mobile) {
-      // no transition on mobile devices
-      this.globalBrightness = 1.0;
-    } else {
-      this.globalBrightness = 0.0;
-      TweenManager.removeAll({ category: "scenefade" });
-      TweenManager.tween({
-        target: { value: 0 },
-        duration: this.transitionDuration,
-        mode: "EaseInOut",
-        algo: "Quadratic",
-        props: { value: 1.0 },
-        onTweenUpdate: function(tween) {
-          CanvasCycle.globalBrightness = tween.target.value;
-        },
-        category: "scenefade"
-      });
-    }
+	processImage: function (img) {
+		this.initPalettes(img.palettes);
+		this.initTimeline(img.timeline);
 
-    this.run();
-  },
+		// force a full palette and pixel refresh for first frame
+		this.oldTimeOffset = -1;
 
-  initPalettes: function(pals) {
-    // create palette objects for each raw time-based palette
-    var scene = scenes[this.sceneIdx];
+		// create an intermediate palette that will hold the time-of-day colors
+		this.todPalette = new Palette(img.base.colors, img.base.cycles);
 
-    this.palettes = {};
-    for (var key in pals) {
-      var pal = pals[key];
+		// initialize, receive image data from server
+		this.bmp = new Bitmap(img.base);
+		this.bmp.optimize();
 
-      if (scene.remap) {
-        for (var idx in scene.remap) {
-          pal.colors[idx][0] = scene.remap[idx][0];
-          pal.colors[idx][1] = scene.remap[idx][1];
-          pal.colors[idx][2] = scene.remap[idx][2];
-        }
-      }
+		// var canvas = $("mycanvas");
+		const canvas = document.getElementById("mycanvas");
+		if (!canvas.getContext) return; // no canvas support
 
-      var palette = (this.palettes[key] = new Palette(pal.colors, pal.cycles));
-      palette.copyColors(palette.baseColors, palette.colors);
-    }
-  },
+		if (!this.ctx) this.ctx = canvas.getContext("2d");
+		this.ctx.clearRect(0, 0, this.bmp.width, this.bmp.height);
+		this.ctx.fillStyle = "rgb(0,0,0)";
+		this.ctx.fillRect(0, 0, this.bmp.width, this.bmp.height);
 
-  initTimeline: function(entries) {
-    // create timeline with pointers to each palette
-    this.timeline = {};
-    for (var offset in entries) {
-      var palette = this.palettes[entries[offset]];
-      if (!palette)
-        return alert(
-          "ERROR: Could not locate palette for timeline entry: " +
-            entries[offset]
-        );
-      this.timeline[offset] = palette;
-    }
-  },
+		if (!this.imageData) {
+			if (this.ctx.createImageData) {
+				this.imageData = this.ctx.createImageData(
+					this.bmp.width,
+					this.bmp.height,
+				);
+			} else if (this.ctx.getImageData) {
+				this.imageData = this.ctx.getImageData(
+					0,
+					0,
+					this.bmp.width,
+					this.bmp.height,
+				);
+			} else return; // no canvas data support
+		}
+		this.bmp.clear(this.imageData);
 
-  run: function() {
-    // start main loop
-    if (!this.inGame) {
-      this.inGame = true;
-      this.animate();
-    }
-  },
+		if (ua.mobile) {
+			// no transition on mobile devices
+			this.globalBrightness = 1.0;
+		} else {
+			this.globalBrightness = 0.0;
+			TweenManager.removeAll({ category: "scenefade" });
+			TweenManager.tween({
+				target: { value: 0 },
+				duration: this.transitionDuration,
+				mode: "EaseInOut",
+				algo: "Quadratic",
+				props: { value: 1.0 },
+				onTweenUpdate: (tween) => {
+					CanvasCycle.globalBrightness = tween.target.value;
+				},
+				category: "scenefade",
+			});
+		}
 
-  stop: function() {
-    // stop main loop
-    this.inGame = false;
-  },
+		this.run();
+	},
 
-  animate: function() {
-    // animate one frame. and schedule next
-    if (this.inGame) {
-      var colors = this.bmp.palette.colors;
+	run: function () {
+		// start main loop
+		if (!this.inGame) {
+			this.inGame = true;
+			this.animate();
+		}
+	},
 
-      var optimize = true;
-      var newSec = FrameCount.count();
+	stop: function () {
+		this.inGame = false;
+	},
 
-      if (newSec) {
-        // advance time
-        this.timeOffset++;
-        if (this.timeOffset >= 86400) this.timeOffset = 0;
-      }
+	animate: function () {
+		// animate one frame. and schedule next
+		if (this.inGame) {
+			let optimize = true;
+			const newSec = FrameCount.count();
 
-      if (this.lastBrightness != this.globalBrightness) optimize = false;
-      if (this.highlightColor != this.lastHighlightColor) optimize = false;
+			if (newSec) {
+				// advance time
+				this.timeOffset++;
+				if (this.timeOffset >= 86400) this.timeOffset = 0;
+			}
 
-      if (!scenes[this.sceneIdx].timeless && this.oldTimeOffset === -1) {
-        this.setTimeOfDayPalette();
-        optimize = false;
-      }
+			if (this.timeOffset !== this.oldTimeOffset) {
+				// calculate time-of-day base colors
+				this.setTimeOfDayPalette();
+				optimize = false;
+			}
 
-      // cycle palette
-      this.bmp.palette.cycle(
-        this.bmp.palette.baseColors,
-        GetTickCount(),
-        this.settings.speedAdjust,
-        this.settings.blendShiftEnabled
-      );
+			if (this.lastBrightness !== this.globalBrightness) optimize = false;
+			if (this.highlightColor !== this.lastHighlightColor) optimize = false;
 
-      if (this.highlightColor > -1) {
-        this.bmp.palette.colors[this.highlightColor] = new Color(0, 0, 0);
-      }
-      if (this.globalBrightness < 1.0) {
-        // bmp.palette.fadeToColor( pureBlack, 1.0 - globalBrightness, 1.0 );
-        this.bmp.palette.burnOut(1.0 - this.globalBrightness, 1.0);
-      }
+			this.bmp.palette.cycle(
+				this.bmp.palette.baseColors,
+				GetTickCount(),
+				this.settings.speedAdjust,
+				this.settings.blendShiftEnabled,
+			);
+			if (this.highlightColor > -1) {
+				this.bmp.palette.colors[this.highlightColor] = new Color(255, 255, 255);
+			}
+			if (this.globalBrightness < 1.0) {
+				// bmp.palette.fadeToColor( pureBlack, 1.0 - globalBrightness, 1.0 );
+				this.bmp.palette.burnOut(1.0 - this.globalBrightness, 1.0);
+			}
+			this.bmp.render(this.imageData, optimize);
+			this.ctx.putImageData(this.imageData, 0, 0);
 
-      // render pixels
-      this.bmp.render(this.imageData, optimize);
-      this.ctx.putImageData(this.imageData, 0, 0);
+			this.lastBrightness = this.globalBrightness;
+			this.lastHighlightColor = this.highlightColor;
+			this.oldTimeOffset = this.timeOffset;
 
-      this.lastBrightness = this.globalBrightness;
-      this.lastHighlightColor = this.highlightColor;
-      this.oldTimeOffset = this.timeOffset;
+			TweenManager.logic(this.clock);
+			this.clock++;
 
-      TweenManager.logic(this.clock);
-      this.clock++;
+			if (this.inGame)
+				requestAnimationFrame(() => {
+					CanvasCycle.animate();
+				});
+		}
+	},
 
-      if (this.inGame) {
-        // setTimeout( function() { CanvasCycle.animate(); }, 1 );
-        requestAnimationFrame(function() {
-          CanvasCycle.animate();
-        });
-      }
-    }
-  },
+	setTimeOfDayPalette: function () {
+		// fade palette to proper time-of-day
 
-  setTimeOfDayPalette: function() {
-    // fade palette to proper time-of-day
+		// locate nearest timeline palette before, and after current time
+		// auto-wrap to find nearest out-of-bounds events (i.e. tomorrow and yesterday)
+		const before = {
+			palette: null,
+			dist: 86400,
+			offset: 0,
+		};
+		for (const offset in this.timeline) {
+			if (offset <= this.timeOffset && this.timeOffset - offset < before.dist) {
+				before.dist = this.timeOffset - offset;
+				before.palette = this.timeline[offset];
+				before.offset = offset;
+			}
+		}
+		if (!before.palette) {
+			// no palette found, so wrap around and grab one with highest offset
+			let temp = 0;
+			for (const offset in this.timeline) {
+				if (offset > temp) temp = offset;
+			}
+			before.palette = this.timeline[temp];
+			before.offset = temp - 86400; // adjust timestamp for day before
+		}
 
-    // locate nearest timeline palette before, and after current time
-    // auto-wrap to find nearest out-of-bounds events (i.e. tomorrow and yesterday)
-    var before = {
-      palette: null,
-      dist: 86400,
-      offset: 0
-    };
+		const after = {
+			palette: null,
+			dist: 86400,
+			offset: 0,
+		};
+		for (const offset in this.timeline) {
+			if (offset >= this.timeOffset && offset - this.timeOffset < after.dist) {
+				after.dist = offset - this.timeOffset;
+				after.palette = this.timeline[offset];
+				after.offset = offset;
+			}
+		}
+		if (!after.palette) {
+			// no palette found, so wrap around and grab one with lowest offset
+			let temp = 86400;
+			for (const offset in this.timeline) {
+				if (offset < temp) temp = offset;
+			}
+			after.palette = this.timeline[temp];
+			after.offset = temp + 86400; // adjust timestamp for day after
+		}
 
-    for (var offset in this.timeline) {
-      if (offset <= this.timeOffset && this.timeOffset - offset < before.dist) {
-        before.dist = this.timeOffset - offset;
-        before.palette = this.timeline[offset];
-        before.offset = offset;
-      }
-    }
-    if (!before.palette) {
-      // no palette found, so wrap around and grab one with highest offset
-      var temp = 0;
-      for (var offset in this.timeline) {
-        if (offset > temp) temp = offset;
-      }
-      before.palette = this.timeline[temp];
-      before.offset = temp - 86400; // adjust timestamp for day before
-    }
+		// copy the 'before' palette colors into our intermediate palette
+		this.todPalette.copyColors(
+			before.palette.baseColors,
+			this.todPalette.colors,
+		);
 
-    var after = {
-      palette: null,
-      dist: 86400,
-      offset: 0
-    };
-    for (var offset in this.timeline) {
-      if (offset >= this.timeOffset && offset - this.timeOffset < after.dist) {
-        after.dist = offset - this.timeOffset;
-        after.palette = this.timeline[offset];
-        after.offset = offset;
-      }
-    }
-    if (!after.palette) {
-      // no palette found, so wrap around and grab one with lowest offset
-      var temp = 86400;
-      for (var offset in this.timeline) {
-        if (offset < temp) temp = offset;
-      }
-      after.palette = this.timeline[temp];
-      after.offset = temp + 86400; // adjust timestamp for day after
-    }
+		// now, fade to the 'after' palette, but calculate the correct 'tween' time
+		this.todPalette.fade(
+			after.palette,
+			this.timeOffset - before.offset,
+			after.offset - before.offset,
+		);
 
-    // copy the 'before' palette colors into our intermediate palette
-    this.todPalette.copyColors(
-      before.palette.baseColors,
-      this.todPalette.colors
-    );
+		// finally, copy the final colors back to the bitmap palette for cycling and rendering
+		this.bmp.palette.importColors(this.todPalette.colors);
+	},
 
-    // now, fade to the 'after' palette, but calculate the correct 'tween' time
-    this.todPalette.fade(
-      after.palette,
-      this.timeOffset - before.offset,
-      after.offset - before.offset
-    );
+	setRate: function (rate) {
+		this.settings.targetFPS = rate;
+	},
 
-    // finally, copy the final colors back to the bitmap palette for cycling and rendering
-    this.bmp.palette.importColors(this.todPalette.colors);
-  },
+	setSpeed: function (speed) {
+		this.settings.speedAdjust = speed;
+	},
 
-  saveSettings: function() {
-    // save settings in cookie
-    this.cookie.set("settings", this.settings);
-    this.cookie.save();
-  },
+	setBlendShift: function (enabled) {
+		this.settings.blendShiftEnabled = enabled;
+	},
 
-  setRate: function(rate) {
-    this.settings.targetFPS = rate;
-    this.saveSettings();
-  },
-
-  setSpeed: function(speed) {
-    this.settings.speedAdjust = speed;
-    this.saveSettings();
-  },
-
-  setBlendShift: function(enabled) {
-    this.settings.blendShiftEnabled = enabled;
-    this.saveSettings();
-  },
-
-  startShuffle: function() {
-    var interval = 1000 * 35;
-    setInterval(function() {
-      CanvasCycle.switchScene(Math.floor(Math.random() * scenes.length));
-    }, interval);
-  }
+	randomScene: function () {
+		const randomSceneIdx = getRandomSceneIndex(this.sceneIdx, scenes.length);
+		this.sceneIdx = randomSceneIdx;
+		this.switchScene(randomSceneIdx);
+	},
 };
 
-var CC = CanvasCycle; // shortcut
+const CC = CanvasCycle;

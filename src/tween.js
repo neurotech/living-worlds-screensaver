@@ -8,7 +8,7 @@ var TweenManager = {
   _tweens: {},
   _nextId: 1,
 
-  add: function(_args) {
+  add: function (_args) {
     // add new tween to table
     var _tween = new Tween(_args);
     this._tweens[this._nextId] = _tween;
@@ -17,7 +17,7 @@ var TweenManager = {
     return _tween;
   },
 
-  logic: function(clock) {
+  logic: function (clock) {
     // update tweens
     for (var _id in this._tweens) {
       var _tween = this._tweens[_id];
@@ -26,7 +26,7 @@ var TweenManager = {
     }
   },
 
-  removeAll: function() {
+  removeAll: function () {
     // remove all tweens
     if (arguments.length) {
       var criteria = arguments[0];
@@ -51,7 +51,7 @@ var TweenManager = {
       }
       this._tweens = {};
     }
-  }
+  },
 };
 TweenManager.tween = TweenManager.add;
 
@@ -97,12 +97,12 @@ function Tween(_args) {
     if (typeof _prop.start == "undefined") _prop.start = this.target[_key];
 
     if (
-      _prop.start.toString().match(/^([\d\.]+)([a-zA-Z]+)$/) &&
+      _prop.start.toString().match(/^([\d.]+)([a-zA-Z]+)$/) &&
       !_prop.suffix
     ) {
       _prop.start = RegExp.$1;
       _prop.suffix = RegExp.$3;
-      _prop.end = _prop.end.toString().replace(/[^\d\.]+$/, "");
+      _prop.end = _prop.end.toString().replace(/[^\d.]+$/, "");
     }
     if (
       typeof _prop.start != "number" &&
@@ -140,7 +140,7 @@ function Tween(_args) {
 Tween.prototype.destroyed = false;
 Tween.prototype.delay = 0;
 
-Tween.prototype.require = function() {
+Tween.prototype.require = function () {
   // make sure required class members exist
   for (var _idx = 0, _len = arguments.length; _idx < _len; _idx++) {
     if (typeof this[arguments[_idx]] == "undefined") {
@@ -150,7 +150,7 @@ Tween.prototype.require = function() {
   return true;
 };
 
-Tween.prototype.logic = function(clock) {
+Tween.prototype.logic = function (clock) {
   // abort if our target is destroyed
   // (and don't call onTweenComplete)
   if (this.target.destroyed) {
@@ -213,40 +213,21 @@ function tweenFrame(_start, _end, _amount, _mode, _algo) {
 //
 
 var EaseAlgos = {
-  Linear: function(_amount) {
-    return _amount;
-  },
-  Quadratic: function(_amount) {
-    return Math.pow(_amount, 2);
-  },
-  Cubic: function(_amount) {
-    return Math.pow(_amount, 3);
-  },
-  Quartetic: function(_amount) {
-    return Math.pow(_amount, 4);
-  },
-  Quintic: function(_amount) {
-    return Math.pow(_amount, 5);
-  },
-  Sine: function(_amount) {
-    return 1 - Math.sin(((1 - _amount) * Math.PI) / 2);
-  },
-  Circular: function(_amount) {
-    return 1 - Math.sin(Math.acos(_amount));
-  }
+  Linear: (_amount) => _amount,
+  Quadratic: (_amount) => _amount ** 2,
+  Cubic: (_amount) => _amount ** 3,
+  Quartetic: (_amount) => _amount ** 4,
+  Quintic: (_amount) => _amount ** 5,
+  Sine: (_amount) => 1 - Math.sin(((1 - _amount) * Math.PI) / 2),
+  Circular: (_amount) => 1 - Math.sin(Math.acos(_amount)),
 };
 var EaseModes = {
-  EaseIn: function(_amount, _algo) {
-    return EaseAlgos[_algo](_amount);
-  },
-  EaseOut: function(_amount, _algo) {
-    return 1 - EaseAlgos[_algo](1 - _amount);
-  },
-  EaseInOut: function(_amount, _algo) {
-    return _amount <= 0.5
+  EaseIn: (_amount, _algo) => EaseAlgos[_algo](_amount),
+  EaseOut: (_amount, _algo) => 1 - EaseAlgos[_algo](1 - _amount),
+  EaseInOut: (_amount, _algo) =>
+    _amount <= 0.5
       ? EaseAlgos[_algo](2 * _amount) / 2
-      : (2 - EaseAlgos[_algo](2 * (1 - _amount))) / 2;
-  }
+      : (2 - EaseAlgos[_algo](2 * (1 - _amount))) / 2,
 };
 function ease(_amount, _mode, _algo) {
   return EaseModes[_mode](_amount, _algo);

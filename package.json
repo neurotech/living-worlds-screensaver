@@ -2,11 +2,12 @@
   "name": "living-worlds-screensaver",
   "version": "1.0.0",
   "description": "Living Worlds screensaver in Electron",
-  "main": "app.js",
+  "main": "dist-electron/main.js",
   "scripts": {
-    "bundle": "electron-builder",
-    "postbundle": "rm -rf ./dist/win-unpacked",
-    "start": "electron ."
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder",
+    "check": "biome check",
+    "preview": "vite preview"
   },
   "build": {
     "directories": {
@@ -23,12 +24,19 @@
   },
   "author": "Tim Douglas",
   "license": "MIT",
-  "dependencies": {
-    "normalize.css": "^8.0.1",
-    "v8-compile-cache": "^2.1.0"
-  },
   "devDependencies": {
-    "electron": "^6.0.1",
-    "electron-builder": "^21.2.0"
+    "@biomejs/biome": "2.1.2",
+    "electron": "^25.2.0",
+    "electron-builder": "^24.4.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.3.9",
+    "vite-plugin-electron": "^0.12.0",
+    "vite-plugin-electron-renderer": "^0.14.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
   }
 }

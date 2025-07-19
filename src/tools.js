@@ -9,21 +9,21 @@ function $(thingy) {
   var obj =
     typeof thingy == "string" ? document.getElementById(thingy) : thingy;
   if (obj && !obj.setOpacity) {
-    obj.hide = function() {
+    obj.hide = function () {
       this.style.display = "none";
       return this;
     };
-    obj.show = function() {
+    obj.show = function () {
       this.style.display = "";
       return this;
     };
-    obj.addClass = function(name) {
+    obj.addClass = function (name) {
       this.removeClass(name);
       this.className += " " + name;
       return this;
     };
 
-    obj.removeClass = function(name) {
+    obj.removeClass = function (name) {
       var classes = this.className.split(/\s+/);
       var idx = find_idx_in_array(classes, name);
       if (idx > -1) {
@@ -33,7 +33,7 @@ function $(thingy) {
       return this;
     };
 
-    obj.setClass = function(name, enabled) {
+    obj.setClass = function (name, enabled) {
       if (enabled) this.addClass(name);
       else this.removeClass(name);
     };
@@ -47,11 +47,11 @@ function parseQueryString(queryString) {
   var queryObject = new Object();
   queryString = queryString.replace(/^.*\?(.+)$/, "$1");
 
-  while ((pair = queryString.match(/(\w+)=([^\&]*)\&?/)) && pair[0].length) {
+  while ((pair = queryString.match(/(\w+)=([^&]*)&?/)) && pair[0].length) {
     queryString = queryString.substring(pair[0].length);
     pair[2] = unescape(pair[2]);
-    if (/^\-?\d+$/.test(pair[2])) pair[2] = parseInt(pair[2], 10);
-    else if (/^\-?\d+\.\d+$/.test(pair[2])) pair[2] = parseFloat(pair[2]);
+    if (/^-?\d+$/.test(pair[2])) pair[2] = parseInt(pair[2], 10);
+    else if (/^-?\d+\.\d+$/.test(pair[2])) pair[2] = parseFloat(pair[2]);
     queryObject[pair[1]] = pair[2];
   }
 
@@ -60,7 +60,7 @@ function parseQueryString(queryString) {
 
 function GetTickCount() {
   // milliseconds since page load
-  return Math.floor(new Date().getTime() - CanvasCycle.globalTimeStart);
+  return Math.floor(Date.now() - CanvasCycle.globalTimeStart);
 }
 
 function getInnerWindowSize(dom) {
@@ -143,7 +143,7 @@ function serialize(thingy, glue) {
     stream +=
       '"' +
       thingy
-        .replace(/([\"\\])/g, "\\$1")
+        .replace(/(["\\])/g, "\\$1")
         .replace(/\r/g, "\\r")
         .replace(/\n/g, "\\n") +
       '"';
@@ -172,7 +172,7 @@ function serialize(thingy, glue) {
   return stream;
 }
 
-(function() {
+(() => {
   // Browser detection
   var u = navigator.userAgent;
   var webkit = !!u.match(/webkit/i);
@@ -223,6 +223,6 @@ function serialize(thingy, glue) {
     titanium: titanium,
     android: android,
     mobile: iphone || ipad || android,
-    ver: ver
+    ver: ver,
   };
 })();

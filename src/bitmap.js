@@ -10,7 +10,7 @@ Class.create("Bitmap", {
   drawCount: 0,
   optPixels: null,
 
-  __construct: function(img) {
+  __construct: function (img) {
     // class constructor
     this.width = img.width;
     this.height = img.height;
@@ -18,7 +18,7 @@ Class.create("Bitmap", {
     this.pixels = img.pixels;
   },
 
-  optimize: function() {
+  optimize: function () {
     // prepare bitmap for optimized rendering (only refresh pixels that changed)
     var optColors = [];
     for (var idx = 0; idx < 256; idx++) optColors[idx] = 0;
@@ -53,7 +53,7 @@ Class.create("Bitmap", {
     } // y loop
   },
 
-  clear: function(imageData) {
+  clear: function (imageData) {
     // clear all pixels to white
     var data = imageData.data;
     var i = 0;
@@ -72,7 +72,7 @@ Class.create("Bitmap", {
     }
   },
 
-  render: function(imageData, optimize) {
+  render: function (imageData, optimize) {
     // render pixels into canvas imageData object
     var colors = this.palette.getRawTransformedColors();
     var data = imageData.data;
@@ -125,5 +125,5 @@ Class.create("Bitmap", {
     }
 
     this.drawCount++;
-  }
+  },
 });

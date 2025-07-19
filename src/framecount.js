@@ -14,19 +14,19 @@ var FrameCount = {
   ie: !!navigator.userAgent.match(/MSIE/),
   visible: true,
 
-  init: function() {
+  init: function () {
     // create floating widget
     if (this.visible) {
       var html =
         '<div id="d_framecount" style="float:right; width:200px; border:1px solid #ccc; background:#eee; margin:10px; padding:10px; font-family:Helvetica,sans-serif; font-size:11px; color:#444;">Waiting for frames...</div>';
 
       if (this.ie) {
-        setTimeout(function() {
+        setTimeout(() => {
           document.body.insertAdjacentHTML(
             "beforeEnd",
             '<div style="position:absolute; z-index:9999; left:0px; top:0px; width:100%;">' +
               html +
-              "</div>"
+              "</div>",
           );
         }, 1000);
       } else {
@@ -42,7 +42,7 @@ var FrameCount = {
     }
   },
 
-  update: function() {
+  update: function () {
     // update display
     var div = document.getElementById("d_framecount");
     if (div) {
@@ -69,7 +69,7 @@ var FrameCount = {
     }
   },
 
-  reset: function() {
+  reset: function () {
     this.current = 0;
     this.average = 0;
     this.frameCount = 0;
@@ -79,13 +79,13 @@ var FrameCount = {
     this.update();
   },
 
-  _now_epoch: function() {
+  _now_epoch: () => {
     // return current date/time in hi-res epoch seconds
     var _mydate = new Date();
     return _mydate.getTime() / 1000;
   },
 
-  count: function() {
+  count: function () {
     // advance one frame
     var _now = this._now_epoch();
     var _int_now = parseInt(_now, 10);
@@ -108,5 +108,5 @@ var FrameCount = {
     this.frameCount++;
 
     return result;
-  }
+  },
 };

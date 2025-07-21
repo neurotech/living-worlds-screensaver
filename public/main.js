@@ -42,7 +42,7 @@ const CanvasCycle = {
     width: 640,
     optionsWidth: 0,
     height: 480 + 40,
-    scale: 3,
+    scale: 4,
   },
 
   init: function () {
@@ -138,13 +138,10 @@ const CanvasCycle = {
 
   loadImage: async function (name, title, offsetX, offsetY) {
     this.stop();
-    const sceneToLoad = require(`./scenefiles/${name}.json`);
 
-    console.table({
-      name,
-      offsetX,
-      offsetY,
-    });
+    const sceneToLoad = await fetch(`scenefiles/${name}.json`).then((res) =>
+      res.json(),
+    );
 
     const canvas = document.getElementById("mycanvas");
     if (canvas) {

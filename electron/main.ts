@@ -1,5 +1,11 @@
 import path from "node:path";
-import { app, BrowserWindow, ipcMain, screen } from "electron";
+import {
+  app,
+  BrowserWindow,
+  type BrowserWindowConstructorOptions,
+  ipcMain,
+  screen,
+} from "electron";
 
 process.env.DIST = path.join(__dirname, "../dist");
 process.env.PUBLIC = app.isPackaged
@@ -9,6 +15,7 @@ process.env.PUBLIC = app.isPackaged
 let win: BrowserWindow | null;
 const additionalWindows: BrowserWindow[] = [];
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
+const devMode = VITE_DEV_SERVER_URL;
 
 const createWindow = () => {
   if (!process.env.PUBLIC) throw new Error("PUBLIC env var is undefined!");
@@ -28,11 +35,11 @@ const createWindow = () => {
     return display.id !== primaryDisplay.id;
   });
 
-  const browserWindowOptions = {
+  const browserWindowOptions: BrowserWindowConstructorOptions = {
     backgroundColor: "#181a20",
     width: 1280,
     height: 840,
-    autoHideMenuBar: true,
+    autoHideMenuBar: !devMode,
     darkTheme: true,
     show: false,
     webPreferences: {
@@ -66,18 +73,6 @@ const createWindow = () => {
         additional.loadFile(path.join(process.env.DIST, "index.html"));
       }
     });
-
-    setTimeout(() => {
-      win?.setKiosk(true);
-      win?.setAlwaysOnTop(true);
-      win?.show();
-
-      additionalWindows.forEach((win) => {
-        win.setKiosk(true);
-        win.setAlwaysOnTop(true);
-        win.show();
-      });
-    }, 2000);
   }
 
   if (VITE_DEV_SERVER_URL) {
@@ -91,6 +86,26 @@ const createWindow = () => {
 const register = () => {
   ipcMain.on("sendQuit", async () => {
     app.quit();
+  });
+
+  if (devMode) {
+    win?.maximize();
+  } else {
+    win?.setKiosk(true);
+  }
+
+  win?.setAlwaysOnTop(true);
+  win?.show();
+
+  additionalWindows.forEach((additional) => {
+    if (devMode) {
+      additional?.maximize();
+    } else {
+      additional?.setKiosk(true);
+    }
+
+    additional.setAlwaysOnTop(true);
+    additional.show();
   });
 };
 

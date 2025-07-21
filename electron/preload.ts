@@ -4,7 +4,7 @@ export const api = {
   sendQuit: () => ipcRenderer.sendSync("sendQuit"),
 };
 
-var dev = false;
+var dev = Boolean(process.env.VITE_DEV_SERVER_URL);
 
 if (!dev) {
   document.addEventListener("keydown", api.sendQuit);
